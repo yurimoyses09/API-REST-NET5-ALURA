@@ -1,2 +1,2 @@
 # API-REST-NET5-ALURA
-Repositório destinado a api utilizando .net core 5
+Repositorio para armazenar os codigos do curso da alura. Link https://cursos.alura.com.br/formacao-dotnet
