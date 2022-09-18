@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UsuariosAPI.Data.DTOs.UsuarioDTO;
+using UsuariosAPI.Data.Requests;
 using UsuariosAPI.Sevices;
 
 namespace UsuariosAPI.Controllers
@@ -27,7 +28,16 @@ namespace UsuariosAPI.Controllers
 
             if (resultado.IsFailed) return StatusCode(500);
 
-            return Ok(usuarioDto);
+            return Ok(resultado.Successes);
+        }
+
+        [HttpPost("/ativa")]
+        public IActionResult AtivaConta(AtivaContaRequest ativaConta)
+        {
+            Result result = _cadastroUsuario.AtivaContaUsuario(ativaConta);
+            if (result.IsFailed) return StatusCode(500);
+
+            return Ok(result.Successes);
         }
     }
 }

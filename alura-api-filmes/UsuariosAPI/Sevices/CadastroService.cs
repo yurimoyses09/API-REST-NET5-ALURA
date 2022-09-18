@@ -2,9 +2,11 @@
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using UsuariosAPI.Data;
 using UsuariosAPI.Data.DTOs.UsuarioDTO;
+using UsuariosAPI.Data.Requests;
 using UsuariosAPI.Models;
 
 namespace UsuariosAPI.Sevices
@@ -22,15 +24,31 @@ namespace UsuariosAPI.Sevices
             _userManager = userManager;
         }
 
-        internal Result CadastraUsuario(CreateUsuarioDto usuarioDto)
+        public Result CadastraUsuario(CreateUsuarioDto usuarioDto)
         {
             Usuario usuario = _mapper.Map<Usuario>(usuarioDto);
             IdentityUser<int> identity = _mapper.Map<IdentityUser<int>>(usuario);
 
             Task<IdentityResult> resultadoIdentity = _userManager.CreateAsync(identity, usuario.Password);
 
-            if (resultadoIdentity.Result.Succeeded) return Result.Ok();
+            if (resultadoIdentity.Result.Succeeded)
+            {
+                var code = _userManager.GenerateEmailConfirmationTokenAsync(identity).Result;
+                return Result.Ok().WithSuccess(code);
+            }
+
             return Result.Fail("Falha ao cadastrar usuario");
+        }
+
+        public Result AtivaContaUsuario(AtivaContaRequest ativaConta)
+        {
+            var identityUser = _userManager.Users.FirstOrDefault(x => x.Id == ativaConta.UsuarioId);
+
+            var identityResult = _userManager.ConfirmEmailAsync(identityUser, ativaConta.CodigoAtivacao).Result;
+
+            if (identityResult.Succeeded) return Result.Ok();
+
+            return Result.Fail("Falha ao confirmar email");
         }
     }
 }
