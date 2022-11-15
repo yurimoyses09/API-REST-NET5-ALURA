@@ -34,5 +34,21 @@ namespace UsuariosAPI.Sevices
 
             return Result.Fail("Falha ao realizar o Login do usuario");
         }
+
+        internal Result SolicitaResetaSenhaUsuario(SolicitaResetRequest request)
+        {
+            IdentityUser<int> identityUser = _signInManager.UserManager.Users.FirstOrDefault(x => x.NormalizedEmail == request.Email.ToUpper());
+
+            if(identityUser != null)
+            {
+                string token = _signInManager.UserManager.GeneratePasswordResetTokenAsync(identityUser).Result;
+
+                return Result.Ok().WithSuccess(token);
+            }
+
+            return Result.Fail("Falha ao solicitar redefinicao de senha");
+
+
+        }
     }
 }
