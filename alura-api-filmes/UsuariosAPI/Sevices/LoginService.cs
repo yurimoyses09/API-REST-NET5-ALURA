@@ -37,9 +37,9 @@ namespace UsuariosAPI.Sevices
 
         internal Result SolicitaResetaSenhaUsuario(SolicitaResetRequest request)
         {
-            IdentityUser<int> identityUser = _signInManager.UserManager.Users.FirstOrDefault(x => x.NormalizedEmail == request.Email.ToUpper());
+            IdentityUser<int> identityUser = RecuperaUsuarioPorEmail(request.Email);
 
-            if(identityUser != null)
+            if (identityUser != null)
             {
                 string token = _signInManager.UserManager.GeneratePasswordResetTokenAsync(identityUser).Result;
 
@@ -49,6 +49,22 @@ namespace UsuariosAPI.Sevices
             return Result.Fail("Falha ao solicitar redefinicao de senha");
 
 
+        }
+
+        internal Result ResetaResetaSenhaUsuario(EfetuaResetRequest request)
+        {
+            IdentityUser<int> identityUser = RecuperaUsuarioPorEmail(request.Email);
+
+            IdentityResult resultIdentity = _signInManager.UserManager.ResetPasswordAsync(identityUser, request.Token, request.RePassword).Result;
+
+            if (resultIdentity.Succeeded) return Result.Ok().WithSuccess("Senha alterada com sucesso");
+
+            return Result.Fail("Falha ao redefinir senha");
+        }
+
+        private IdentityUser<int> RecuperaUsuarioPorEmail(string email)
+        {
+            return _signInManager.UserManager.Users.FirstOrDefault(x => x.NormalizedEmail == email.ToUpper());
         }
     }
 }
