@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
 using UsuariosAPI.Data.Requests;
+using UsuariosAPI.Models;
 
 namespace UsuariosAPI.Sevices
 {
@@ -29,7 +30,9 @@ namespace UsuariosAPI.Sevices
                     .Users
                     .FirstOrDefault(x => x.NormalizedUserName == request.UserName.ToUpper());
 
-                return Result.Ok().WithSuccess(_tokenService.CreateToken(useridentity).Value);
+                Token token = _tokenService.CreateToken(useridentity, _signInManager.UserManager.GetRolesAsync(useridentity).Result.FirstOrDefault()); 
+
+                return Result.Ok().WithSuccess(token.Value);
             }
 
             return Result.Fail("Falha ao realizar o Login do usuario");
