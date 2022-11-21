@@ -4,6 +4,7 @@ using alura_api_filmes.Models;
 using alura_api_filmes.Services;
 using AutoMapper;
 using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace alura_api_filmes.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public IActionResult CreateFilme([FromBody] CreateFilmeDTO filmedto)
         {
             try
