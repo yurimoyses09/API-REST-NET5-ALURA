@@ -39,6 +39,7 @@ namespace alura_api_filmes.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin, regular")]
         public IActionResult GetFilmes()
         {
             try
